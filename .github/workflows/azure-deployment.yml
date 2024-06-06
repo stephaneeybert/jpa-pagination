@@ -8,7 +8,6 @@ permissions:
 env:
   ASC_PACKAGE_PATH: ${{ github.workspace }}
   JAVA_VERSION: 21
-  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   APP_NAME: spring-posts
   SERVICE_NAME: posts
 
@@ -37,7 +36,7 @@ jobs:
       - name: 'Deploy the artifact in production'
         uses: azure/spring-cloud-deploy@v1
         with:
-          azure-subscription: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: Deploy
           service-name: ${{ env.SERVICE_NAME }}
           app-name: ${{ env.APP_NAME }}
