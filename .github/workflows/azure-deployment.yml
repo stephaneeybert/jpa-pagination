@@ -1,0 +1,45 @@
+name: Deploy on the Azure cloud
+on: [push]
+
+permissions:
+    id-token: write
+    contents: read
+
+env:
+  ASC_PACKAGE_PATH: ${{ github.workspace }}
+  JAVA_VERSION: 21
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  APP_NAME: spring-posts
+  SERVICE_NAME: posts
+
+jobs:
+  deploy_to_production:
+    name: 'Deploy the artefact in production'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Github Action'
+        uses: actions/checkout@v2
+
+      - name: 'Set up JDK ${{ env.JAVA_VERSION }}'
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 'Maven clean & build'
+        run: |
+          mvn clean package -DskipTests
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 'Deploy the artifact in production'
+        uses: azure/spring-cloud-deploy@v1
+        with:
+          azure-subscription: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          action: Deploy
+          service-name: ${{ env.SERVICE_NAME }}
+          app-name: ${{ env.APP_NAME }}
+          use-staging-deployment: false
+          package: ${{ env.ASC_PACKAGE_PATH }}/**/*.jar

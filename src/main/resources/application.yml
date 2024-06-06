@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: jpa-pagination
+
+  h2:
+    console:
+      enabled: true
+
+  datasource:
+    generate-unique-name: false
+    name: person
+
+  jpa:
+    show-sql: true
